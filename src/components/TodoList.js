@@ -14,18 +14,14 @@ import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
 import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
 import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
 import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
+import Todo from "./Todo";
+
 export default function TodoList() {
   return (
     <Container maxWidth="sm">
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
-          <Typography
-            gutterBottom
-            variant="h2"
-            sx={{ color: "text.secondary" }}
-          >
-            مهامي
-          </Typography>
+          <Typography variant="h2">مهامي</Typography>
           <Divider />
           {/* FILTER BUTTONS */}
           <ToggleButtonGroup
@@ -41,10 +37,12 @@ export default function TodoList() {
           </ToggleButtonGroup>
 
           {/* === FILTER BUTTONS ===  */}
+
+          {/* All TODOS */}
+          <Todo />
+
+          {/*  === All TODOS  ===== */}
         </CardContent>
-        <CardActions>
-          <Button size="small">Learn More</Button>
-        </CardActions>
       </Card>
     </Container>
   );
