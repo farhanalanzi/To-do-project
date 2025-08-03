@@ -15,13 +15,59 @@ import FormatAlignLeftIcon from "@mui/icons-material/FormatAlignLeft";
 import FormatAlignCenterIcon from "@mui/icons-material/FormatAlignCenter";
 import FormatAlignRightIcon from "@mui/icons-material/FormatAlignRight";
 import Todo from "./Todo";
+import { Grid } from "@mui/material";
+import TextField from "@mui/material/TextField";
+//others
+import { v4 as uuidv4 } from "uuid";
+
+import { useState } from "react";
+
+//Components
+
+const initialTodos = [
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "تفاصيل ",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "gdr",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "gr",
+    isCompleted: false,
+  },
+];
 
 export default function TodoList() {
+  const [todos, setTodos] = useState(initialTodos);
+  const [titleInput, setTitleInput] = useState("");
+
+  const todosJSX = todos.map((t) => {
+    return <Todo key={t.id} todo={t} />;
+  });
+  function handleAddClick() {
+    const newTodo = {
+      id: uuidv4(),
+      title: titleInput,
+      details: "",
+      isCompleted: false,
+    };
+    setTodos([...todos,newTodo])
+  }
   return (
     <Container maxWidth="sm">
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
-          <Typography variant="h2">مهامي</Typography>
+          <Typography variant="h2" style={{ fontWeight: "bold" }}>
+            مهامي
+          </Typography>
           <Divider />
           {/* FILTER BUTTONS */}
           <ToggleButtonGroup
@@ -39,9 +85,53 @@ export default function TodoList() {
           {/* === FILTER BUTTONS ===  */}
 
           {/* All TODOS */}
-          <Todo />
+          {todosJSX}
 
           {/*  === All TODOS  ===== */}
+
+          {/* Input + add button */}
+          <Grid container style={{ marginTop: "20px" }} spacing={2}>
+            <Grid
+              item
+              size={8}
+              display="flex"
+              justifyContent="space-around"
+              alignItems="center"
+              style={{ background: "" }}
+            >
+              <TextField
+                style={{ width: "100%" }}
+                id="outlined-basic"
+                label="عنوان المهمه"
+                variant="outlined"
+                value={titleInput}
+                onChange={(e) => {
+                  setTitleInput(e.target.value);
+                }}
+              />
+            </Grid>
+
+            <Grid
+              item
+              size={4}
+              display="flex"
+              justifyContent="space-around"
+              alignItems="center"
+              style={{ background: "orange" }}
+            >
+              <Button
+                style={{ width: "100%", height: "100%" }}
+                variant="contained"
+                onClick={() => {
+                  handleAddClick();
+                }}
+              >
+                إضافة
+              </Button>
+            </Grid>
+          </Grid>
+
+          {/*==== Input + add button ===*/}
         </CardContent>
       </Card>
     </Container>
