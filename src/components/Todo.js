@@ -5,20 +5,145 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
+import TextField from '@mui/material/TextField';
 
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 import IconButton from "@mui/material/IconButton";
+import { v4 as uuidv4 } from "uuid";
 
-export default function TodoList({ todo }) {
+import { useContext, useState } from "react";
+import { TodosContext } from "../contexts/todosContext";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+export default function TodoList({ todo, handleCheck }) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(true);
+
+  const { todos, setTodos } = useContext(TodosContext);
+
+  // EVENT HANDLERS
   function handleCheckClick() {
-    todo.isCompletd = true;
+    const updatedTodos = todos.map((t) => {
+      if (t.id == todo.id) {
+        t.isCompleted = !t.isCompleted;
+      }
+      return t;
+    });
+    setTodos(updatedTodos);
   }
+
+  function handleDeleteClick() {
+    setShowDeleteDialog(true);
+  }
+
+  function handleDeleteDialogClose() {
+    setShowDeleteDialog(false);
+  }
+
+  function handleUpdateClick() {
+    setShowUpdateDialog(true);
+  }
+
+  function handleUpdateClose() {
+    setShowUpdateDialog(false);
+  }
+
+  function handleDeleteConfirm() {
+    const updatedTodos = todos.filter((t) => {
+      return t.id != todo.id;
+    });
+
+    setTodos(updatedTodos);
+  }
+
+  function handleUpdateConfirm() {
+   
+    alert("Hellllo World ")
+  }
+  // == EVENT HANDLERS ==
+
   return (
     <>
-      {" "}
+      {/* DELETE MODEL */}
+
+      <Dialog
+        style={{ direction: "rtl" }}
+        onClose={handleDeleteDialogClose}
+        open={showDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          "هل انت متاكد من رغبتك في حذف المهمه "
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            لايمكنك التراجع بعد الحذف
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose}>إغلاق</Button>
+          <Button autoFocus onClick={handleDeleteConfirm}>
+            نعم , قم بالحذف
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* == DELETE MODEL == */}
+
+      {/* UPDATE DIALOG  */}
+
+      <Dialog
+        style={{ direction: "rtl" }}
+        onClose={handleUpdateClose}
+        open={showUpdateDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+         تعديل المهمة 
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="name"
+              name="email"
+              label="عنوان المهمة "
+              fullWidth
+              variant="standard"
+            />
+
+              <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="name"
+              name="email"
+              label="التفاصيل  "
+              fullWidth
+              variant="standard"
+            />
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleUpdateClose}>إغلاق</Button>
+          <Button autoFocus onClick={handleUpdateConfirm}>
+            تأكيد
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/*  === UPDATE DIALOG ===  */}
+
       <Card
         className="todoCard"
         sx={{
@@ -46,6 +171,7 @@ export default function TodoList({ todo }) {
             >
               {/* CHECK Icon button */}
 
+
               <IconButton
                 onClick={() => {
                   handleCheckClick();
@@ -53,17 +179,24 @@ export default function TodoList({ todo }) {
                 className="iconButton"
                 aria-label="delete"
                 style={{
-                  color: "#8bc34a",
-                  background: "white",
+                  color: todo.isCompleted ? "white" : "#8bc34a",
+                  background: todo.isCompleted ? "#8bc34a" : "white",
                   border: "solid #8bc34a 3px",
                 }}
               >
                 <CheckIcon />
               </IconButton>
 
+                       
+
+
               {/* == CHECK Icon button=== */}
 
+
+
+
               <IconButton
+                onClick={handleUpdateClick}
                 className="iconButton"
                 aria-label="delete"
                 style={{
@@ -74,6 +207,8 @@ export default function TodoList({ todo }) {
               >
                 <EditOutlinedIcon />
               </IconButton>
+                   {/*=== Update button === */}
+              {/* DELETE BUTTON */}
               <IconButton
                 className="iconButton"
                 aria-label="delete"
@@ -82,9 +217,11 @@ export default function TodoList({ todo }) {
                   background: "white",
                   border: "solid #b23c17 3px",
                 }}
+                onClick={handleDeleteClick}
               >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
+              {/* DELETE BUTTON */}
             </Grid>
             {/* ====Action buttons ==== */}
           </Grid>

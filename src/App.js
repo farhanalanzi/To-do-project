@@ -3,29 +3,58 @@ import "./App.css";
 import "./components/TodoList.js";
 import TodoList from "./components/TodoList.js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { TodosContext } from "./contexts/todosContext.js";
+import { useState } from "react";
+
+import { v4 as uuidv4 } from "uuid";
+
 const theme = createTheme({
   typography: {
-    fontFamily:[
-      "Alexandria"
-    ]
-  }
+    fontFamily: ["Alexandria"],
+  },
 });
+
+const initialTodos = [
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "تفاصيل ",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "gdr",
+    isCompleted: false,
+  },
+  {
+    id: uuidv4(),
+    title: "قراءة كتاب",
+    details: "gr",
+    isCompleted: false,
+  },
+];
 function App() {
+  const [todos, setTodos] = useState(initialTodos);
+
   return (
     <ThemeProvider theme={theme}>
-    <div
-      className="App"
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        background: "#191b1f",
-        height: "100vh",
-        direction: "rtl",
-      }}
-    >
-      <TodoList />
-    </div>
+      <div
+        className="App"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#191b1f",
+          height: "100vh",
+          direction: "rtl",
+        }}
+      >
+        <TodosContext.Provider value={{ todos, setTodos }}>
+        
+          <TodoList />
+        </TodosContext.Provider>
+      </div>
     </ThemeProvider>
   );
 }

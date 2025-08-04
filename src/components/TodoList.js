@@ -18,39 +18,23 @@ import Todo from "./Todo";
 import { Grid } from "@mui/material";
 import TextField from "@mui/material/TextField";
 //others
+import { TodosContext } from "../contexts/todosContext";
+import { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 
 import { useState } from "react";
 
 //Components
 
-const initialTodos = [
-  {
-    id: uuidv4(),
-    title: "قراءة كتاب",
-    details: "تفاصيل ",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "قراءة كتاب",
-    details: "gdr",
-    isCompleted: false,
-  },
-  {
-    id: uuidv4(),
-    title: "قراءة كتاب",
-    details: "gr",
-    isCompleted: false,
-  },
-];
-
 export default function TodoList() {
-  const [todos, setTodos] = useState(initialTodos);
+  const value = useContext(TodosContext)
+  const {todos,setTodos} = useContext(TodosContext)
   const [titleInput, setTitleInput] = useState("");
 
+ 
   const todosJSX = todos.map((t) => {
-    return <Todo key={t.id} todo={t} />;
+    return <Todo key={t.id} todo={t}  />;
   });
   function handleAddClick() {
     const newTodo = {
@@ -59,7 +43,7 @@ export default function TodoList() {
       details: "",
       isCompleted: false,
     };
-    setTodos([...todos,newTodo])
+    setTodos([...todos, newTodo]);
   }
   return (
     <Container maxWidth="sm">
