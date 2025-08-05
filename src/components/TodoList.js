@@ -19,23 +19,50 @@ import { Grid } from "@mui/material";
 import TextField from "@mui/material/TextField";
 //others
 import { TodosContext } from "../contexts/todosContext";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-
-import { useState } from "react";
 
 //Components
 
 export default function TodoList() {
-  const value = useContext(TodosContext)
-  const {todos,setTodos} = useContext(TodosContext)
+  const value = useContext(TodosContext);
+  const { todos, setTodos } = useContext(TodosContext);
   const [titleInput, setTitleInput] = useState("");
+  const [displayedTodosType, setDisplayedTodosType] = useState("All");
 
- 
-  const todosJSX = todos.map((t) => {
-    return <Todo key={t.id} todo={t}  />;
+  // FILTERATION ARRAYS
+
+  const completedTodos = todos.filter((t) => {
+    return t.isCompleted;
   });
+  const notCompletedTodos = todos.filter((t) => {
+    return !t.isCompleted;
+  });
+
+  let todosToBeRenderd = todos;
+
+  if (displayedTodosType == "completed") {
+    todosToBeRenderd = completedTodos;
+  } else if (displayedTodosType == "non-completed") {
+    todosToBeRenderd = notCompletedTodos;
+  } else {
+    todosToBeRenderd = todos;
+  }
+
+  const todosJSX = todosToBeRenderd.map((t) => {
+    return <Todo key={t.id} todo={t} />;
+  });
+
+  useEffect(() => {
+    console.log("calling use effect");
+    const storageTodos = JSON.parse(localStorage.getItem("todos")) ?? [];
+    setTodos(storageTodos);
+  }, []);
+
+  function changeDisplayedType(e) {
+    setDisplayedTodosType(e.target.value);
+  }
+
   function handleAddClick() {
     const newTodo = {
       id: uuidv4(),
@@ -43,11 +70,21 @@ export default function TodoList() {
       details: "",
       isCompleted: false,
     };
-    setTodos([...todos, newTodo]);
+    const updatedTodos = [...todos, newTodo];
+    setTodos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
+    setTitleInput("");
   }
+
   return (
     <Container maxWidth="sm">
-      <Card sx={{ minWidth: 275 }}>
+      <Card
+        sx={{ minWidth: 275 }}
+        style={{
+          maxHeight: "80vh",
+          overflow: "scroll",
+        }}
+      >
         <CardContent>
           <Typography variant="h2" style={{ fontWeight: "bold" }}>
             مهامي
@@ -56,14 +93,15 @@ export default function TodoList() {
           {/* FILTER BUTTONS */}
           <ToggleButtonGroup
             style={{ direction: "ltr", marginTop: "30px" }}
-            // value={alignment}
+            value={displayedTodosType}
             exclusive
-            // onChange={handleAlignment}
+            onChange={changeDisplayedType}
             aria-label="text alignment"
+            color="primary"
           >
-            <ToggleButton value="right">غير منجز</ToggleButton>
-            <ToggleButton value="center">المنجز</ToggleButton>
-            <ToggleButton value="left">الكل</ToggleButton>
+            <ToggleButton value="non-completed">غير منجز</ToggleButton>
+            <ToggleButton value="completed">المنجز</ToggleButton>
+            <ToggleButton value="all">الكل</ToggleButton>
           </ToggleButtonGroup>
 
           {/* === FILTER BUTTONS ===  */}
@@ -109,6 +147,7 @@ export default function TodoList() {
                 onClick={() => {
                   handleAddClick();
                 }}
+                disabled={titleInput.length == 0}
               >
                 إضافة
               </Button>

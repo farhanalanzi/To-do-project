@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
 
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
@@ -24,7 +24,11 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 export default function TodoList({ todo, handleCheck }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showUpdateDialog, setShowUpdateDialog] = useState(true);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [updatedTodo, setUpdatedTodo] = useState({
+    title: todo.title,
+    details: todo.details,
+  });
 
   const { todos, setTodos } = useContext(TodosContext);
 
@@ -37,6 +41,7 @@ export default function TodoList({ todo, handleCheck }) {
       return t;
     });
     setTodos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
 
   function handleDeleteClick() {
@@ -61,11 +66,20 @@ export default function TodoList({ todo, handleCheck }) {
     });
 
     setTodos(updatedTodos);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
 
   function handleUpdateConfirm() {
-   
-    alert("Hellllo World ")
+    const updatedTodos = todos.map((t) => {
+      if (t.id == todo.id) {
+        return { ...t, title: updatedTodo.title, details: updatedTodo.details };
+      } else {
+        return t;
+      }
+    });
+    setTodos(updatedTodos);
+    setShowUpdateDialog(false);
+    localStorage.setItem("todos", JSON.stringify(updatedTodos));
   }
   // == EVENT HANDLERS ==
 
@@ -106,9 +120,7 @@ export default function TodoList({ todo, handleCheck }) {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-         تعديل المهمة 
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">تعديل المهمة</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             <TextField
@@ -120,9 +132,13 @@ export default function TodoList({ todo, handleCheck }) {
               label="عنوان المهمة "
               fullWidth
               variant="standard"
+              value={updatedTodo.title}
+              onChange={(e) => {
+                setUpdatedTodo({ ...updatedTodo, title: e.target.value });
+              }}
             />
 
-              <TextField
+            <TextField
               autoFocus
               required
               margin="dense"
@@ -131,6 +147,10 @@ export default function TodoList({ todo, handleCheck }) {
               label="التفاصيل  "
               fullWidth
               variant="standard"
+              value={updatedTodo.details}
+              onChange={(e) => {
+                setUpdatedTodo({ ...updatedTodo, details: e.target.value });
+              }}
             />
           </DialogContentText>
         </DialogContent>
@@ -156,11 +176,20 @@ export default function TodoList({ todo, handleCheck }) {
         <CardContent>
           <Grid container spacing={2}>
             <Grid size={8}>
-              <Typography variant="h5" sx={{ textAlign: "right" }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  textAlign: "right",
+                  textDecoration: todo.isCompleted ? "line-through" : "none",
+                }}
+              >
                 {todo.title}
               </Typography>
-              {todo.details}
-              <Typography variant="h6" sx={{ textAlign: "right" }}></Typography>
+
+              <Typography variant="h6" sx={{ textAlign: "right" }}>
+                {" "}
+                {todo.details}{" "}
+              </Typography>
             </Grid>
             {/* Action buttons */}
             <Grid
@@ -170,7 +199,6 @@ export default function TodoList({ todo, handleCheck }) {
               alignItems="center"
             >
               {/* CHECK Icon button */}
-
 
               <IconButton
                 onClick={() => {
@@ -187,13 +215,7 @@ export default function TodoList({ todo, handleCheck }) {
                 <CheckIcon />
               </IconButton>
 
-                       
-
-
               {/* == CHECK Icon button=== */}
-
-
-
 
               <IconButton
                 onClick={handleUpdateClick}
@@ -207,7 +229,7 @@ export default function TodoList({ todo, handleCheck }) {
               >
                 <EditOutlinedIcon />
               </IconButton>
-                   {/*=== Update button === */}
+              {/*=== Update button === */}
               {/* DELETE BUTTON */}
               <IconButton
                 className="iconButton"
